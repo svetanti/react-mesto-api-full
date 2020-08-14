@@ -1,17 +1,6 @@
-const users = require("express").Router();
-const fs = require("fs");
+const users = require('express').Router();
+const { getUsers } = require('../controllers/getters')
 
-let userList = {};
-fs.readFile("./data/users.json", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  userList = JSON.parse(data);
-});
-
-users.get("/users", (req, res) => {
-  res.send(userList);
-});
+users.get('/users', getUsers);
 
 module.exports = users;
