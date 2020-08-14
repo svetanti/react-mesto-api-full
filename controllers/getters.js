@@ -1,5 +1,5 @@
-const readFile = require('../helpers');
 const path = require('path');
+const readFile = require('../helpers');
 
 const getUsers = (req, res) => {
   readFile(path.join(__dirname, '..', 'data', 'users.json'))
@@ -9,7 +9,7 @@ const getUsers = (req, res) => {
     .catch((err) => {
       res.status(500).send({ message: `Произошла ошибка при загрузке полльзователей: ${err}` });
     });
-}
+};
 
 const getCurrentUser = (req, res) => {
   readFile(path.join(__dirname, '..', 'data', 'users.json'))
@@ -21,9 +21,9 @@ const getCurrentUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      res.status(500).send({ message: `Произошла ошибка при загрузке полльзователей: ${err}` })
+      res.status(500).send({ message: `Произошла ошибка при загрузке полльзователей: ${err}` });
     });
-}
+};
 
 const getCards = (req, res) => {
   readFile(path.join(__dirname, '..', 'data', 'cards.json'))
@@ -31,12 +31,12 @@ const getCards = (req, res) => {
       res.send(JSON.parse(cards));
     })
     .catch((err) => {
-      res.status(500).send({ message: `Произошла ошибка при загрузке карточек: ${err}` })
+      res.status(500).send({ message: `Произошла ошибка при загрузке карточек: ${err}` });
     });
-}
+};
 
 module.exports = {
   getUsers,
   getCurrentUser,
-  getCards
-}
+  getCards,
+};
