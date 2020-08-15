@@ -1,42 +1,46 @@
 const path = require('path');
-const readFile = require('../helpers');
+const { getFile } = require('../helpers');
+
+const users = path.join(__dirname, '..', 'data', 'users.json');
+const cards = path.join(__dirname, '..', 'data', 'cards.json');
 
 const getUsers = (req, res) => {
-  readFile(path.join(__dirname, '..', 'data', 'users.json'))
-    .then((users) => {
-      res.send(JSON.parse(users));
+  getFile(users)
+    .then((data) => res.send(data))
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
+};
+
+const checkCurrentUser = (req, res, next) => {
+  getFile(users)
+    .then((data) => {
+      const user = data.find((item) => item._id === req.params._id);
+      if (!user) {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+        return;
+      }
+      next();
     })
-    .catch((err) => {
-      res.status(500).send({ message: `Произошла ошибка при загрузке полльзователей: ${err}` });
-    });
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
 
 const getCurrentUser = (req, res) => {
-  readFile(path.join(__dirname, '..', 'data', 'users.json'))
-    .then((users) => {
-      const user = JSON.parse(users).find((item) => item._id === req.params._id);
-      if (!user) {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-      }
+  getFile(users)
+    .then((data) => {
+      const user = data.find((item) => item._id === req.params._id);
       res.send(user);
     })
-    .catch((err) => {
-      res.status(500).send({ message: `Произошла ошибка при загрузке полльзователей: ${err}` });
-    });
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
 
 const getCards = (req, res) => {
-  readFile(path.join(__dirname, '..', 'data', 'cards.json'))
-    .then((cards) => {
-      res.send(JSON.parse(cards));
-    })
-    .catch((err) => {
-      res.status(500).send({ message: `Произошла ошибка при загрузке карточек: ${err}` });
-    });
+  getFile(cards)
+    .then((data) => res.send(data))
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
 
 module.exports = {
   getUsers,
+  checkCurrentUser,
   getCurrentUser,
   getCards,
 };
