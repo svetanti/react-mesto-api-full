@@ -11,3 +11,5 @@ const getFile = (file) => fs.readFile(file, 'utf8')
   .catch((err) => ({ message: `Произошла ошибка при чтении ${file}: ${err.message}` }));
 
 module.exports = { getFile };
+
+// Большое спасибо за ревью! :)
