@@ -6,13 +6,21 @@ const cards = path.join(__dirname, '..', 'data', 'cards.json');
 
 const getUsers = (req, res) => {
   getFile(users)
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (data instanceof Error) {
+        res.status(data.status).send(data.message);
+      }
+      res.send(data);
+    })
     .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
 
 const checkCurrentUser = (req, res, next) => {
   getFile(users)
     .then((data) => {
+      if (data instanceof Error) {
+        res.status(data.status).send(data.message);
+      }
       const user = data.find((item) => item._id === req.params._id);
       if (!user) {
         res.status(404).send({ message: 'Нет пользователя с таким id' });
@@ -26,6 +34,9 @@ const checkCurrentUser = (req, res, next) => {
 const getCurrentUser = (req, res) => {
   getFile(users)
     .then((data) => {
+      if (data instanceof Error) {
+        res.status(data.status).send(data.message);
+      }
       const user = data.find((item) => item._id === req.params._id);
       res.send(user);
     })
@@ -34,7 +45,12 @@ const getCurrentUser = (req, res) => {
 
 const getCards = (req, res) => {
   getFile(cards)
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (data instanceof Error) {
+        res.status(data.status).send(data.message);
+      }
+      res.send(data);
+    })
     .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
 
