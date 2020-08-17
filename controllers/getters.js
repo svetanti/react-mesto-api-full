@@ -10,23 +10,7 @@ const getUsers = (req, res) => {
       if (data instanceof Error) {
         res.status(data.status).send(data.message);
       }
-      res.send(data);
-    })
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
-};
-
-const checkCurrentUser = (req, res, next) => {
-  getFile(users)
-    .then((data) => {
-      if (data instanceof Error) {
-        res.status(data.status).send(data.message);
-      }
-      const user = data.find((item) => item._id === req.params._id);
-      if (!user) {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-        return;
-      }
-      next();
+      res.status(200).send(data);
     })
     .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
@@ -38,7 +22,11 @@ const getCurrentUser = (req, res) => {
         res.status(data.status).send(data.message);
       }
       const user = data.find((item) => item._id === req.params._id);
-      res.send(user);
+      if (!user) {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+        return;
+      }
+      res.status(200).send(user);
     })
     .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err}` }));
 };
@@ -56,7 +44,6 @@ const getCards = (req, res) => {
 
 module.exports = {
   getUsers,
-  checkCurrentUser,
   getCurrentUser,
   getCards,
 };
