@@ -1,7 +1,7 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "",
+  "description": "Одностраничное приложение Mesto. Фронтенд на React, бэкенд на Express.js",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
