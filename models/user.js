@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return /https?:\/\/[www.]*[\w-\.\/\?\=\&]+#?$/.test(v);
       },
-      message: 'Введите корректный URL',
+      message: 'Введён некорректный URL',
     },
   },
 });
