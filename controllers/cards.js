@@ -39,14 +39,26 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params._id,
     { $addToSet: { likes: req.user._id } },
     { new: true })
+    .catch(() => {
+      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+    })
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params._id,
     { $pull: { likes: req.user._id } },
     { new: true })
+    .catch(() => {
+      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+    })
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
+      res.status(500).send({ message: err.message });
+    });
 };
