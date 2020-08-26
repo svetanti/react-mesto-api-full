@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err.message}` }));
+    .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
 };
 
 module.exports.getCurrentUser = (req, res) => {
@@ -16,7 +16,7 @@ module.exports.getCurrentUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -30,7 +30,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -50,7 +50,7 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -70,6 +70,6 @@ module.exports.updateAvatar = (req, res) => {
     .then((newAvatar) => res.send({ data: newAvatar }))
     .catch((err) => {
       if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };

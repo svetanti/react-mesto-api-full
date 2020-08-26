@@ -6,7 +6,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('user')
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -19,7 +19,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -45,7 +45,7 @@ module.exports.likeCard = (req, res) => {
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
       if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
 
@@ -59,6 +59,6 @@ module.exports.dislikeCard = (req, res) => {
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
       if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
     });
 };
