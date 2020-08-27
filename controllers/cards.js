@@ -9,7 +9,7 @@ module.exports.getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
@@ -17,10 +17,7 @@ module.exports.createCard = (req, res) => {
       throw new BadRequestError({ message: `Указаны некорректные данные при создании карточки: ${err.message}` });
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {

@@ -2,13 +2,12 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
+    .catch(next);
 };
 
-// Это поправили, вроде работает
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.params._id)
     .orFail()
@@ -19,7 +18,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -27,13 +26,10 @@ module.exports.createUser = (req, res) => {
       throw new BadRequestError({ message: `Указаны некорректные данные при создании пользователя: ${err.message}` });
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id,
@@ -41,19 +37,19 @@ module.exports.updateUser = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     })
+    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
     .catch((err) => {
+      if (err instanceof NotFoundError) {
+        throw err;
+      }
       throw new BadRequestError({ message: `Указаны некорректные данные при обновлении пользователя: ${err.message}` });
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id,
@@ -61,14 +57,14 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     })
+    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
     .catch((err) => {
+      if (err instanceof NotFoundError) {
+        throw err;
+      }
       throw new BadRequestError({ message: `Указаны некорректные данные при обновлении аватара: ${err.message}` });
     })
     .then((newAvatar) => res.send({ data: newAvatar }))
-    .catch((err) => {
-      if (err instanceof BadRequestError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };

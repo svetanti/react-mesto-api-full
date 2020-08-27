@@ -22,7 +22,6 @@ app.use((req, res, next) => {
   req.user = {
     _id: '5f44e3c672163c391031464a',
   };
-
   next();
 });
 
