@@ -33,30 +33,26 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params._id,
     { $addToSet: { likes: req.user._id } },
     { new: true })
+    .orFail()
     .catch(() => {
       throw new NotFoundError({ message: 'Нет карточки с таким id' });
     })
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => {
-      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params._id,
     { $pull: { likes: req.user._id } },
     { new: true })
+    .orFail()
     .catch(() => {
       throw new NotFoundError({ message: 'Нет карточки с таким id' });
     })
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => {
-      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
