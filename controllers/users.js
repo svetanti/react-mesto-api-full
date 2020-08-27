@@ -8,16 +8,15 @@ module.exports.getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
 };
 
-module.exports.getCurrentUser = (req, res) => {
+// Это поправили, вроде работает
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.params._id)
+    .orFail()
     .catch(() => {
       throw new NotFoundError({ message: 'Нет пользователя с таким id' });
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res) => {
