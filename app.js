@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
 
@@ -8,6 +9,13 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Слишком много запросов с вашего IP, попробуйте повторить попытку позже',
+});
+
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
