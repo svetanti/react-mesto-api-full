@@ -23,16 +23,14 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params._id)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findByIdAndDelete(req.params._id)
+    .orFail()
     .catch(() => {
       throw new NotFoundError({ message: 'Нет карточки с таким id' });
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err instanceof NotFoundError) res.status(err.status).send(err.message);
-      res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res) => {
