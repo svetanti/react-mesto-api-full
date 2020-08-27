@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -17,8 +18,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        return /https?:\/\/[www.]*[\w-\.\/\?\=\&]+#?$/.test(v);
+      validator(link) {
+        return validator.isURL(link);
       },
       message: 'Введён некорректный URL',
     },
