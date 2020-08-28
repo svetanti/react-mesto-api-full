@@ -28,22 +28,23 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '5f489fa03a12854b3c449870',
+    _id: '5f489fa03a12854b3c449871',
   };
   next();
 });
 
 app.use('/', users);
 app.use('/', cards);
-app.use((req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-});
 app.use((err, req, res, next) => {
   if (err.status !== '500') {
     res.status(err.status).send(err.message);
     return;
   }
   res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
+  next();
+});
+app.use((req, res) => {
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {
