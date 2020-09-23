@@ -1,13 +1,19 @@
+require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
+const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
+
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -26,17 +32,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5f489fa03a12854b3c449871',
-  };
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+// Добавили мидлвару
+app.use('/', auth, users);
+app.use('/', auth, cards);
 
-app.use('/', users);
-app.use('/', cards);
 app.use((err, req, res, next) => {
-  if (err.status !== '500') {
+  if (err.status) {
     res.status(err.status).send(err.message);
     return;
   }

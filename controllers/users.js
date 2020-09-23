@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -19,9 +21,14 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .catch((err) => {
       throw new BadRequestError({ message: `Указаны некорректные данные при создании пользователя: ${err.message}` });
     })
@@ -66,5 +73,20 @@ module.exports.updateAvatar = (req, res, next) => {
       throw new BadRequestError({ message: `Указаны некорректные данные при обновлении аватара: ${err.message}` });
     })
     .then((newAvatar) => res.send({ data: newAvatar }))
+    .catch(next);
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'ce361f879bb257435954f4643685003d9de6dfdd693fc48f41fe23303cd3a681',
+        { expiresIn: '7d' },
+      );
+      res.send(token);
+    })
     .catch(next);
 };
