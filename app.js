@@ -4,10 +4,12 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
+const { errors } = require('celebrate');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -32,6 +34,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
+
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
@@ -44,6 +48,10 @@ app.post('/signup', createUser);
 app.use('/', auth, users);
 app.use('/', auth, cards);
 
+app.use(errorLogger);
+
+app.use(errors());
+
 app.use((err, req, res, next) => {
   if (err.status) {
     res.status(err.status).send(err.message);
@@ -52,6 +60,7 @@ app.use((err, req, res, next) => {
   res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
   next();
 });
+
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
