@@ -86,6 +86,7 @@ module.exports.login = (req, res, next) => {
         'ce361f879bb257435954f4643685003d9de6dfdd693fc48f41fe23303cd3a681',
         { expiresIn: '7d' },
       );
+      // NB! На фронте сейчас ожидаемый ответ {token: 'token}
       res.send(token);
     })
     .catch(next);
