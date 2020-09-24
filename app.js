@@ -10,6 +10,7 @@ const cards = require('./routes/cards.js');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { validateUser, validateLogin } = require('./middlewares/requestValidation');
 
 const { PORT = 3000 } = process.env;
 
@@ -42,8 +43,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateLogin, login);
+app.post('/signup', validateUser, createUser);
 
 app.use('/', auth, users);
 app.use('/', auth, cards);

@@ -87,7 +87,12 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       // NB! На фронте сейчас ожидаемый ответ {token: 'token}
-      res.send(token);
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000,
+          httpOnly: true,
+        })
+        .end();
     })
     .catch(next);
 };

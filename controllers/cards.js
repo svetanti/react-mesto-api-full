@@ -26,7 +26,9 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(() => {
       throw new NotFoundError({ message: 'Нет карточки с таким id' });
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      res.send({ data: card });
+    })
     .catch(next);
 };
 
