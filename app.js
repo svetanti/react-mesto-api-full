@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
 const auth = require('./middlewares/auth');
@@ -15,6 +16,8 @@ const { validateUser, validateLogin } = require('./middlewares/requestValidation
 const { PORT = 3000 } = process.env;
 
 const app = express();
+
+app.use(helmet());
 
 app.use(cookieParser());
 
@@ -48,6 +51,14 @@ app.post('/signup', validateUser, createUser);
 
 app.use('/', auth, users);
 app.use('/', auth, cards);
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'path/to/your/index.html'), (err) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
+});
 
 app.use(errorLogger);
 

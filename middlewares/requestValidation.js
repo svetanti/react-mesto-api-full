@@ -9,7 +9,7 @@ const validateCard = celebrate({
 
 const validateId = celebrate({
   params: Joi.object().keys({
-    postId: Joi.string().alphanum().length(24),
+    _id: Joi.string().alphanum().length(24),
   }),
 });
 
