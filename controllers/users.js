@@ -32,7 +32,11 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       throw new BadRequestError({ message: `Указаны некорректные данные при создании пользователя: ${err.message}` });
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send({
+      data: {
+        name: user.name, about: user.about, avatar, email: user.email,
+      },
+    }))
     .catch(next);
 };
 
@@ -86,10 +90,9 @@ module.exports.login = (req, res, next) => {
         'ce361f879bb257435954f4643685003d9de6dfdd693fc48f41fe23303cd3a681',
         { expiresIn: '7d' },
       );
-      // NB! На фронте сейчас ожидаемый ответ {token: 'token}
       res
         .cookie('jwt', token, {
-          maxAge: 3600000,
+          maxAge: 3600000 * 24 * 7,
           httpOnly: true,
         })
         .end();
