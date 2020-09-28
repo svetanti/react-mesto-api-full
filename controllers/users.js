@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -30,7 +33,9 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .catch((err) => {
-      throw new BadRequestError({ message: `Указаны некорректные данные при создании пользователя: ${err.message}` });
+      if (err.name === 'MongoError') {
+        throw new BadRequestError({ message: 'Пользователь с таким email уже зарегистрирован' });
+      } else next(err);
     })
     .then((user) => res.status(201).send({
       data: {
@@ -41,10 +46,10 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id,
-    { name, about, avatar },
+    { name, about },
     {
       new: true,
       runValidators: true,
@@ -87,15 +92,16 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'ce361f879bb257435954f4643685003d9de6dfdd693fc48f41fe23303cd3a681',
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
+          sameSite: true,
         })
-        .end();
+        .send({ message: 'Успешная авторизация' });
     })
     .catch(next);
 };

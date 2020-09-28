@@ -12,6 +12,7 @@ const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validateUser, validateLogin } = require('./middlewares/requestValidation');
+require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
 
@@ -51,14 +52,6 @@ app.post('/signup', validateUser, createUser);
 
 app.use('/', auth, users);
 app.use('/', auth, cards);
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'path/to/your/index.html'), (err) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
-});
 
 app.use(errorLogger);
 
