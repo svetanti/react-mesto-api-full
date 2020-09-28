@@ -14,7 +14,7 @@
     "no-useless-escape": 0,
     "func-names": [
       "error",
-      "as-needed"
+      "never"
     ]
   }
 }
