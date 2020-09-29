@@ -1,4 +1,4 @@
-![alt text](./logo.svg "MESTO")
+![alt text](https://raw.githubusercontent.com/svetanti/react-mesto-auth/f6692c8b640ef9628bf167827730feed5039be54/src/images/logo-black.svg "MESTO")
 
 # Проект Mesto. REST API для одностраничного приложения
 
