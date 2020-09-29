@@ -5,13 +5,13 @@ const urlValidation = (value) => {
   if (!validator.isURL(value)) {
     throw new CelebrateError('Некорректный URL');
   }
-  return true;
+  return value;
 };
 
 const validateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom(urlValidation).uri(),
+    link: Joi.string().custom(urlValidation).required(),
   }),
 });
 
@@ -25,7 +25,7 @@ const validateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(20),
-    avatar: Joi.string().required().custom(urlValidation).uri(),
+    avatar: Joi.string().custom(urlValidation).required(),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
@@ -40,7 +40,7 @@ const validateUserUpdate = celebrate({
 
 const validateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().custom(urlValidation).uri().required(),
+    avatar: Joi.string().custom(urlValidation).required(),
   }),
 });
 
