@@ -12,6 +12,7 @@ const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validateUser, validateLogin } = require('./middlewares/requestValidation');
+const NotFoundError = require('./errors/NotFoundError.js');
 require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
@@ -53,6 +54,10 @@ app.post('/signup', validateUser, createUser);
 app.use('/', auth, users);
 app.use('/', auth, cards);
 
+app.use(() => {
+  throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
+});
+
 app.use(errorLogger);
 
 app.use(errors());
@@ -64,10 +69,6 @@ app.use((err, req, res, next) => {
   }
   res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
   next();
-});
-
-app.use((req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {
